@@ -6,3 +6,12 @@ services:
     container_name: nginx_alpine
     ports:
       - "80:80"
+
+  wordpress:
+    build: ./requirements/wordpress
+    container_name: wordpress_alpine
+    volumes:
+      - wordpress:/var/wordpress
+
+volumes:
+  wordpress:
