@@ -1,13 +1,18 @@
 FROM alpine:3.14
 
-RUN apk add --no-cache \
-    nginx
+RUN apk update && \
+    apk add --no-cache \
+    nginx \
+    openssl
 
-RUN rm /etc/nginx/http.d/default.conf
 COPY ./conf/wp-nginx.conf /etc/nginx/http.d/
 
-RUN echo "daemon off;" >> /etc/nginx/nginx.conf
+RUN rm /etc/nginx/http.d/default.conf && \
+    openssl req -x509 -newkey rsa:2048 -nodes -sha256 \
+    -keyout /etc/ssl/private/localhost.key \
+    -out /etc/ssl/certs/localhost.crt \
+    -subj "/CN=localhost"
 
-EXPOSE 80
+EXPOSE 443
 
-CMD nginx
+CMD ["nginx", "-g", "daemon off;"]
