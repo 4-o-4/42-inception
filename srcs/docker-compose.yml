@@ -3,15 +3,25 @@ version: "3.8"
 services:
   nginx:
     build: ./requirements/nginx
-    container_name: nginx_alpine
+    container_name: nginx
+    depends_on:
+      - wordpress
     ports:
-      - "80:80"
+      - "443:443"
+    volumes:
+      - wordpress:/var/wordpress
 
   wordpress:
     build: ./requirements/wordpress
-    container_name: wordpress_alpine
+    container_name: wordpress
+    depends_on:
+      - mariadb
     volumes:
       - wordpress:/var/wordpress
+
+  mariadb:
+    build: ./requirements/mariadb
+    container_name: mariadb
 
 volumes:
   wordpress:
