@@ -12,7 +12,13 @@ services:
       - wordpress:/var/wordpress
 
   wordpress:
-    build: ./requirements/wordpress
+    build:
+      context: ./requirements/wordpress
+      args:
+        DATABASE: $MYSQL_DATABASE
+        USER: $MYSQL_USER
+        PASSWORD: $MYSQL_PASSWORD
+        HOSTNAME: $MYSQL_HOSTNAME
     container_name: wordpress
     depends_on:
       - mariadb
@@ -20,6 +26,12 @@ services:
       - wordpress:/var/wordpress
 
   mariadb:
+    build:
+      context: ./requirements/mariadb
+      args:
+        DATABASE: $MYSQL_DATABASE
+        USER: $MYSQL_USER
+        PASSWORD: $MYSQL_PASSWORD
     build: ./requirements/mariadb
     container_name: mariadb
 

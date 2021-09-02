@@ -8,6 +8,7 @@ RUN apk update && \
 COPY ./conf/wp-nginx.conf /etc/nginx/http.d/
 
 RUN rm /etc/nginx/http.d/default.conf && \
+    \
     openssl req -x509 -newkey rsa:2048 -nodes -sha256 \
     -keyout /etc/ssl/private/localhost.key \
     -out /etc/ssl/certs/localhost.crt \
