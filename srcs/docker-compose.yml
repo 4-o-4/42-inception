@@ -4,12 +4,16 @@ services:
   nginx:
     build: ./requirements/nginx
     container_name: nginx
+    image: nginx
     depends_on:
       - wordpress
     ports:
       - "443:443"
     volumes:
       - wordpress:/var/wordpress
+    restart: always
+    networks:
+      - localhost
 
   wordpress:
     build:
@@ -20,10 +24,14 @@ services:
         PASSWORD: $MYSQL_PASSWORD
         HOSTNAME: $MYSQL_HOSTNAME
     container_name: wordpress
+    image: wordpress
     depends_on:
       - mariadb
     volumes:
       - wordpress:/var/wordpress
+    restart: always
+    networks:
+      - localhost
 
   mariadb:
     build:
@@ -32,8 +40,31 @@ services:
         DATABASE: $MYSQL_DATABASE
         USER: $MYSQL_USER
         PASSWORD: $MYSQL_PASSWORD
-    build: ./requirements/mariadb
     container_name: mariadb
+    image: mariadb
+    volumes:
+      - db:/var/lib/mysql
+    restart: always
+    networks:
+      - localhost
+
+networks:
+  localhost:
+    name: gplaid.42.fr
+    driver: bridge
 
 volumes:
   wordpress:
+    name: wordpress
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/gplaid/data/wordpress
+  db:
+    name: db
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/gplaid/data/mysql
