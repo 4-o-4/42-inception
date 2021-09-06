@@ -15,18 +15,18 @@ COPY ./conf/wordpress.sql /
 RUN openrc > /dev/null 2>&1 && \
     touch /run/openrc/softlevel && \
     \
-    sed -i "s/skip-networking/#skip-networking/" \
-    /etc/my.cnf.d/mariadb-server.cnf && \
-    \
-    service mariadb setup > /dev/null 2>&1 && \
-    service mariadb start > /dev/null 2>&1 && \
+    /etc/init.d/mariadb setup > /dev/null 2>&1 && \
+    /etc/init.d/mariadb start > /dev/null 2>&1 && \
     \
     mysql -e "CREATE DATABASE $DATABASE; \
-    GRANT ALL PRIVILEGES ON $DATABASE.* TO '$USER'@'%' IDENTIFIED BY '$PASSWORD'; \
+    GRANT ALL PRIVILEGES ON wordpress.* TO '$USER'@'%' IDENTIFIED BY '$PASSWORD'; \
     FLUSH PRIVILEGES;" && \
     \
-    mysql $DATABASE < wordpress.sql
+    mysql $DATABASE < wordpress.sql && \
+    \
+    mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '$PASSWORD'; \
+    FLUSH PRIVILEGES;"
 
 EXPOSE 3306
 
-CMD ["mysqld_safe"]
+CMD ["mysqld_safe", "--skip-networking=off"]
